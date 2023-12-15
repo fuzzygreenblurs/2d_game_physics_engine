@@ -28,6 +28,9 @@ struct Body {
     float mass;
     float invMass;
 
+    // impulse
+    float restitution;
+
     Shape* shape = nullptr;
 
     Body(const Shape& shape, float x, float y, float mass);
@@ -38,6 +41,8 @@ struct Body {
     void AddTorque(float torque);
     void ClearTorque();
     void Update(float const deltaTime);
+    bool IsStatic() const;
+    void ApplyImpulse(const Vec2& j);
 
     ~Body(); 
 };

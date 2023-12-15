@@ -16,11 +16,9 @@ void Application::Setup()
     running = Graphics::OpenWindow();
     // anchor = Vec2(Graphics::Width() / 2.0, 30);
     
-    Body* bigBall = new Body(CircleShape(100), 100, 100, 1.0);
-    Body* smallBall = new Body(CircleShape(50), 500, 100, 1.0);
+    Body* bigBall = new Body(CircleShape(100), 400, 400, 0.0);
 
     bodies.push_back(bigBall);
-    bodies.push_back(smallBall);
 }
 
 void Application::Input() {
@@ -62,21 +60,25 @@ void Application::Input() {
             //     break;
 
             case SDL_MOUSEBUTTONDOWN:
-                if(!leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
-                    leftMouseButtonDown = true;
+                // if(!leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
+                //     leftMouseButtonDown = true;
                     int x, y;
                     SDL_GetMouseState(&x, &y);
                     mouseCursor.x = x;
                     mouseCursor.y = y;
-                }
+
+                    Body* smallBall = new Body(CircleShape(20), x, y, 1.0);
+                    smallBall->restitution = 0.9;
+                    bodies.push_back(smallBall);
+                // }
                 break;
 
-            case SDL_MOUSEMOTION:
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-                bodies[0]->position.x = x;
-                bodies[0]->position.y = y;
-                break;
+            // case SDL_MOUSEMOTION:
+            //     int x, y;
+            //     SDL_GetMouseState(&x, &y);
+            //     bodies[0]->position.x = x;
+            //     bodies[0]->position.y = y;
+            //     break;
 
             // case SDL_MOUSEBUTTONUP:
             //     if(leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
@@ -112,11 +114,11 @@ void Application::Update() {
         // Vec2 drag = Force::GenerateDragForce(*body, 0.01);
         // body->AddForce(drag);
 
-        // Vec2 wind = Vec2(0.0, body->mass * 9.8 * PIXELS_PER_METER);
-        // body->AddForce(wind);
+        Vec2 weight = Vec2(0.0, body->mass * 9.8 * PIXELS_PER_METER);
+        body->AddForce(weight);
         
-        // Vec2 weight = Vec2(20.0 * PIXELS_PER_METER, 0.0);
-        // body->AddForce(weight);
+        // Vec2 wind = Vec2(2.0 * PIXELS_PER_METER, 0.0);
+        // body->AddForce(wind);
         
         // float torque = 200;
         // body->AddTorque(torque);
@@ -158,6 +160,9 @@ void Application::Update() {
 
                 a->isColliding = true;
                 b->isColliding = true;
+
+                // resolve collision using penetration and impulse methods together
+                contact.ResolveCollision();
             } else {
                 a->isColliding = false;
                 b->isColliding = false;
